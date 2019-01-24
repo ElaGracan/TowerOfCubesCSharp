@@ -14,8 +14,8 @@ namespace TowerOfCubes
         int[] indegree; // broj ulaznih puteva u i-tu kocku okrenutu stranom k prema gore
         int n;
         int[] sorted;
-        int[][] MaxAndPrevious;
-        Queue<int> zeroin;
+        int[][] MaxAndPrevious; // prvi redak sadrzi duljinu najviseg tornja do cvora j, a drugi je index cvora koji mu prethodi u tornju
+        Queue<int> zeroin; // red za obradu cvorova koji mogu biti prvi u tornju (na dnu)
 
         public ToC(int n, int[][] cubes)
         {
@@ -47,9 +47,13 @@ namespace TowerOfCubes
 
         void topSort()
         {
+            // na kraju se u sorted polju nalaze svi čvorovi, ali redom od onih koji su imali najmanji indegree do vecih
+            //Console.WriteLine();
+            //Console.WriteLine(string.Join(" ", indegree));
+            //Console.WriteLine();
             int j = 0;
             for (int i = 0; i < n * 6; i++)
-                if (indegree[i] == 0) zeroin.Enqueue(i); //ovo znaci da i moze biti pocetni vrh (niti jedan put ne vodi u taj vrh)
+                if (indegree[i] == 0) zeroin.Enqueue(i); //ovo znaci da i moze biti pocetni vrh (niti jedan put ne vodi u taj vrh), tj moze biti dno tornja
             while(zeroin.Count() != 0)
             {
                 int el = zeroin.Dequeue();
@@ -58,7 +62,7 @@ namespace TowerOfCubes
 
                 for (int i = 0; i < n * 6; i++)
                 {
-                    if(graph[el][i] == 1)
+                    if(graph[el][i] == 1) // u koje je cvorove moguce doci iz el (outdegree od el)
                     {
                         indegree[i]--;
                         if (indegree[i] == 0) zeroin.Enqueue(i);
@@ -73,7 +77,7 @@ namespace TowerOfCubes
         void calculateTowers()
         {
             MaxAndPrevious[0] = new int[6 * n];
-            MaxAndPrevious[1] = new int[6 * n];
+            MaxAndPrevious[1] = new int[6 * n]; 
             MaxAndPrevious[1] = Enumerable.Repeat(-1, 6*n).ToArray();
 
             
@@ -83,17 +87,16 @@ namespace TowerOfCubes
                 for (int j = 0; j < n * 6; j++)
                 {
                    
-                    if (graph[sorted[i]][j] == 1)
-                    {
-                        if (MaxAndPrevious[0][j] <= MaxAndPrevious[0][sorted[i]] + 1)
-                            MaxAndPrevious[0][j] = MaxAndPrevious[0][sorted[i]] + 1;
-                        MaxAndPrevious[1][j] = sorted[i];
+                    if (graph[sorted[i]][j] == 1) // gledam retke matrice graph redosljedom kako pise u sorted polju
+                    { // j je cvor u koji mogu doci iz cvora sorted[i] (j mogu staviti na s[i])
+                        if (MaxAndPrevious[0][j] < MaxAndPrevious[0][sorted[i]] + 1) // ako dosad je najdulji toranj do cvora j manji od dosad najduljeg tornja do s[i]+1
+                            MaxAndPrevious[0][j] = MaxAndPrevious[0][sorted[i]] + 1; // znaci da cu radije ici putem do cvora s[i] pa zatim do j
+                        MaxAndPrevious[1][j] = sorted[i]; // namjestimo s[i] na prethodnika od j da znamo rekonstruirati put
                     }
                 }
             }
 
-          //  Console.WriteLine(string.Join(" ", MaxAndPrevious[0]));
-          //  Console.WriteLine(string.Join(" ", MaxAndPrevious[1]));
+           
 
         }
 
@@ -112,7 +115,7 @@ namespace TowerOfCubes
             this.calculateTowers();
             int max = this.getMaxTower();
 
-            Console.WriteLine(MaxAndPrevious[0][max] + 1) ;
+            //Console.WriteLine(MaxAndPrevious[0][max] + 1) ;
             int i = max;
             while (true)
             {
@@ -157,6 +160,18 @@ namespace TowerOfCubes
             Console.WriteLine();
             Console.WriteLine(string.Join(" ", indegree));
             Console.WriteLine();
+
+            Console.WriteLine(string.Join(" ", MaxAndPrevious[0]));
+            Console.WriteLine(string.Join(" ", MaxAndPrevious[1]));
+
+            Console.WriteLine();
+
+            Console.WriteLine(string.Join(" ", sorted));
+
+            Console.WriteLine();
+
+
+
         }
 
         public void printCubes()

@@ -44,12 +44,12 @@ namespace TowerOfCubes
                 Console.WriteLine("Test case #{0}: ", testcase);
                 
                 //tower.printCubes();
-               // tower.printGraph();
+                
 
                 tower.printTower();
 
 
-
+               // tower.printGraph();
 
 
 
