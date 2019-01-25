@@ -111,8 +111,8 @@ namespace TowerOfCubes
 
         public void printTower()
         {
-            this.topSort();
-            this.calculateTowers();
+            this.topSort(); // kreira polje sorted
+            this.calculateTowers(); //za svaki
             int max = this.getMaxTower();
 
             //Console.WriteLine(MaxAndPrevious[0][max] + 1) ;

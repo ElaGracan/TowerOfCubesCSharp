@@ -49,7 +49,9 @@ namespace TowerOfCubes
                 tower.printTower();
 
 
-               // tower.printGraph();
+                // tower.printGraph();
+
+                testcase++;
 
 
 
